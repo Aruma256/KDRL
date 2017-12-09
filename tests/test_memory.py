@@ -1,13 +1,13 @@
 from unittest import TestCase
-from kdrl.memory import Memory
+from kdrl.memory import *
 import numpy as np
 
-class TestMemory(TestCase):
+class TestSingleActionMemory(TestCase):
     def test_discrete(self):
         capacity = 3
         state_shape = (3, 2)
         nb_actions = 4
-        memory = Memory(capacity, state_shape, nb_actions)
+        memory = SingleActionMemory(capacity, state_shape, nb_actions)
         s = np.arange(state_shape[0] * state_shape[1]).reshape(state_shape)
         for i in range(5):
             memory.push(s + i, i % nb_actions, s + i + 1, i, i != 4)

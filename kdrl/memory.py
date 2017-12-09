@@ -1,14 +1,14 @@
 import numpy as np
 
-class Memory:
-    def __init__(self, capacity, state_shape, action, continuous_action=False):
+class SingleActionMemory:
+    def __init__(self, capacity, state_shape, continuous_action=False):
         self.capacity = capacity
         self._next = 0
         self.filled = (capacity == self._next)
         #
         self.s = np.zeros(((capacity,) + state_shape), dtype=np.float32)
         if continuous_action:
-            self.a = np.zeros((capacity, nb_actions), dtype=np.float32)
+            self.a = np.zeros(capacity, dtype=np.float32)
         else:
             self.a = np.zeros(capacity, dtype=np.int8)
         self.ns = np.zeros_like(self.s)
