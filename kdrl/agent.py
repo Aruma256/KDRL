@@ -2,7 +2,7 @@ import numpy as np
 
 from keras import backend as K
 from keras.models import Model, model_from_json
-from keras.layers import Input, Lambda, multiply
+from keras.layers import Input, Lambda, dot
 
 from keras_util import build
 
@@ -25,7 +25,7 @@ class DQNAgent:
         state_input = self.core_model.input()
         action_switch = Input(shape=(1,), dtype=np.uint8)
         one_hot = Lambda(K.one_hot, arguments={'num_classes': num_actions},  output_shape=(num_actions,))
-        self.model = Model([state_input, action_switch], multiply([self.core_model(state_input), one_hot(action_switch)]))
+        self.model = Model([state_input, action_switch], dot([self.core_model(state_input), one_hot(action_switch)]))
         self.num_actions = num_actions
         self.optimizer = optimizer
         self.loss = loss
