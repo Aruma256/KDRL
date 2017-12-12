@@ -1,7 +1,8 @@
 import numpy as np
 
+from keras import backend as K
 from keras.models import Model, model_from_json
-from keras.layers import Input, Multiply
+from keras.layers import Input, Lambda, multiply
 
 from keras_util import build
 
@@ -22,8 +23,9 @@ class DQNAgent:
                  batch_size=32):
         self.core_model = core_model
         state_input = self.core_model.input()
-        action_switch = Input(shape=(self.num_actions,))
-        self.model = Model([state_input, action_switch], Multiply([self.core_model(state_input), action_switch]))
+        action_switch = Input(shape=(1,), dtype=np.uint8)
+        one_hot = Lambda(K.one_hot, arguments={'num_classes': num_actions},  output_shape=(num_actions,))
+        self.model = Model([state_input, action_switch], multiply([self.core_model(state_input), one_hot(action_switch)]))
         self.num_actions = num_actions
         self.optimizer = optimizer
         self.loss = loss
@@ -42,9 +44,6 @@ class DQNAgent:
         self.episode = 1
         self.compiled = False
         self.learning = True
-        #
-        self.ones_single = np.ones((1, num_actions), dtype=np.int8)
-        self.ones_batch = np.tile(self.ones_single, (batch_size, 1))
     def compile(self):
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
         self.sync_target_model()
