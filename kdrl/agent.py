@@ -35,24 +35,24 @@ class DQNAgent:
         self.batch_size = batch_size
         #
         if target_model_update == 1:
-            self.target_model = self.model
+            self.target_core_model = self.core_model
         else:
-            self.target_model = model_from_json(model.to_json())
+            self.target_core_model = model_from_json(self.core_model.to_json())
         self.last_state = None
         self.episode = 1
-        self.compiled = False
         self.learning = True
-    def compile(self):
+        # compile
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
         self.sync_target_model()
-        self.compiled = True
     def sync_target_model(self):
-        if target_model_update != 1:
-            self.target_model.set_weights(self.model.get_weights())
+        if self.target_model_update != 1:
+            self.target_core_model.set_weights(self.core_model.get_weights())
     def select_best_action(self, state):
         scores = self.core_model.predict_on_batch(state)[0]
         return np.argmax(scores)
     def train(self):
-        states, actions, next_states, rewards, step_flags = self.memory.getSample(self.batch_size)
-        pred_Q = self.target_model.predict_on_batch()
+        states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
+        pred_Q = self.target_core_model.predict_on_batch(next_states)
+        max_Q = np.max(pred_Q, axis=-1)
+        self.model.train_on_batch([states, actions], rewards + cont_flags * self.gamma * max_Q)
 
