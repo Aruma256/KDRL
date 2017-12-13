@@ -14,13 +14,34 @@ class SingleActionMemory:
         self.ns = np.zeros_like(self.s)
         self.r = np.zeros(capacity, dtype=np.float32)
         self.c = np.zeros(capacity, dtype=np.bool)
-
-    def push(self, state, action, next_state, reward, cont):
+        #
+        self.last_state = None
+        self.last_action = None
+    def start_episode(self, state, action):
+        self.last_state = state
+        self.last_action = action
+    def step(self, state, action, reward):
+        assert self.last_state is not None
+        assert self.last_action is not None
+        #
+        self._push(state, reward, cont=True)
+        #
+        self.last_state = state
+        self.last_action = action
+    def end_episode(self, state, reward):
+        if self.last_state is None:
+            return
+        assert self.last_action is not None
+        #
+        self._push(state, reward, cont=False)
+        #
+        self.last_state = None
+        self.last_action = None
+    def _push(self, next_state, reward, cont):
         p = self._next
-        self.s[p] = state
-        self.a[p] = action
-        if cont:
-            self.ns[p] = next_state
+        self.s[p] = self.last_state
+        self.a[p] = self.last_action
+        self.ns[p] = next_state
         self.r[p] = reward
         self.c[p] = cont
         #
@@ -28,10 +49,8 @@ class SingleActionMemory:
         self._next %= self.capacity
         if self._next == 0:
             self.filled = True
-
     def _get_current_size(self):
         return self.capacity if self.filled else self._next
-
     def sample(self, num):
         assert self._get_current_size() >= num
         idx = np.random.choice(self._get_current_size(), size=num, replace=False)

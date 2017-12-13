@@ -55,4 +55,18 @@ class DQNAgent:
         pred_Q = self.target_core_model.predict_on_batch(next_states)
         max_Q = np.max(pred_Q, axis=-1)
         self.model.train_on_batch([states, actions], rewards + cont_flags * self.gamma * max_Q)
+    def _select_action(self, state):
+        scores = self.core_model.predict_on_batch(np.asarray(state))
+        action = self.policy(scores)
+        return action
+    def start_episode(self, state):
+        action = self._select_action(state)
+        self.memory.start(state, action)
+        return action
+    def step(self, state, reward):
+        action = self._select_action(state)
+        self.memory.step(state, action, reward)
+        return action
+    def end_episode(self, state, reward):
+        self.memory.end_episode(state, reward)
 
