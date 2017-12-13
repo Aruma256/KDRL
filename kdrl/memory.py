@@ -10,7 +10,7 @@ class SingleActionMemory:
         if continuous_action:
             self.a = np.zeros(capacity, dtype=np.float32)
         else:
-            self.a = np.zeros(capacity, dtype=np.int8)
+            self.a = np.zeros(capacity, dtype=np.int32)
         self.ns = np.zeros_like(self.s)
         self.r = np.zeros(capacity, dtype=np.float32)
         self.c = np.zeros(capacity, dtype=np.bool)

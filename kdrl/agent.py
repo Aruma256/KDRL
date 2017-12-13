@@ -18,7 +18,7 @@ class DQNAgent:
                  batch_size=32):
         self.core_model = core_model
         state_input = self.core_model.input
-        action_switch = Input(shape=(1,), dtype='uint8')
+        action_switch = Input(shape=(1,), dtype='int32')
         if K.backend() == 'tensorflow':
             one_hot = Lambda(lambda x: K.flatten(K.one_hot(x, num_actions)), output_shape=(num_actions,))
         else:
