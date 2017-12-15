@@ -8,7 +8,7 @@ class EpsilonGreedyPolicy(GreedyPolicy):
     def __init__(self, eps):
         self.eps = eps
     def __call__(self, scores):
-        if self.eps > np.random.uniform():
+        if self.eps < np.random.uniform():
             return np.random.randint(len(scores))
         else:
             return GreedyPolicy.__call__(self, scores)

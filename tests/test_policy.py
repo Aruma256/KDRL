@@ -10,7 +10,7 @@ class TestMemory(TestCase):
 
     def test_epsilongreedy(self):
         policy = EpsilonGreedyPolicy(0)
-        policy.eps = 0
+        policy.eps = 1
         assert policy(np.array([5, 20, 10])) == 1
         assert policy(np.array([-5, -20, -10])) == 0
         
