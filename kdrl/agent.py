@@ -37,8 +37,8 @@ class DQNAgent:
         else:
             self.target_core_model = model_from_json(self.core_model.to_json())
         self.last_state = None
-        self.episode = 1
-        self.learning = True
+        self.episode_count = 0
+        self.train_count = 0
         # compile
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
         self.sync_target_model()
@@ -54,6 +54,10 @@ class DQNAgent:
             pred_Q = self.target_core_model.predict_on_batch(next_states)
             max_Q = np.max(pred_Q, axis=-1)
             self.model.train_on_batch([states, actions], rewards + cont_flags * self.gamma * max_Q)
+            #
+            self.train_count += 1
+            if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
+                self.sync_target_model()
     def _select_action(self, state):
         scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
         action = self.policy(scores)
@@ -70,4 +74,5 @@ class DQNAgent:
     def end_episode(self, state, reward):
         self.memory.end_episode(state, reward)
         self.train()
+        self.episode_count += 1
 
