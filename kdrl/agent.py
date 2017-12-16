@@ -18,13 +18,9 @@ class DQNAgent:
                  batch_size=32):
         self.core_model = core_model
         state_input = self.core_model.input
-        '''
         action_switch = Input(shape=(1,), dtype='int32')
-        one_hot = Lambda(lambda x: K.one_hot(x, num_actions), output_shape=(num_actions,))
+        one_hot = Lambda(lambda x: K.squeeze(K.one_hot(x, num_actions), axis=1), output_shape=(num_actions,))
         self.model = Model([state_input, action_switch], dot([self.core_model(state_input), one_hot(action_switch)], axes=1))
-        '''
-        action_input = Input((num_actions,))
-        self.model = Model([state_input, action_input], dot([self.core_model(state_input), action_input], axes=1))
         #
         self.num_actions = num_actions
         self.optimizer = optimizer
@@ -57,8 +53,7 @@ class DQNAgent:
             states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
             pred_Q = self.target_core_model.predict_on_batch(next_states)
             max_Q = np.max(pred_Q, axis=-1)
-            #self.model.train_on_batch([states, actions], rewards + cont_flags * self.gamma * max_Q)
-            self.model.train_on_batch([states, np.eye(self.num_actions)[actions]], rewards + cont_flags * self.gamma * max_Q)
+            self.model.train_on_batch([states, actions], rewards + cont_flags * self.gamma * max_Q)
     def _select_action(self, state):
         scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
         action = self.policy(scores)
