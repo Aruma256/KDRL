@@ -16,23 +16,21 @@ class TestAgent(TestCase):
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
         model = Sequential([InputLayer(input_shape=state_shape),
-                            Dense(16, activation='relu'),
-                            Dense(16, activation='relu'),
-                            Dense(16, activation='relu'),
+                            Dense(64, activation='relu'),
+                            Dense(64, activation='relu'),
                             Dense(num_actions)])
         agent = DQNAgent(core_model=model,
                          num_actions=num_actions,
                          optimizer='adam',
-                         policy=BoltzmannPolicy(),
+                         policy=EpsilonGreedyPolicy(eps=0.01),
                          memory=SingleActionMemory(capacity=10000,
                                                    state_shape=state_shape),
                          )
         #
-        for episode in range(1000):
+        for episode in range(500):
             state = env.reset()
             action = agent.start_episode(state)
             while True:
-                env.render()
                 state, reward, done, info = env.step(action)
                 if not done:
                     action = agent.step(state, reward)
@@ -40,4 +38,16 @@ class TestAgent(TestCase):
                 else:
                     agent.end_episode(state, reward)
                     break
+        for episode in range(5):
+            step_count = 0
+            state = env.reset()
+            while True:
+                #env.render()
+                action = agent.select_best_action(state)
+                state, reward, done, info = env.step(action)
+                step_count += 1
+                if done:
+                    break
+            assert step_count >= 100, step_count
+
 
