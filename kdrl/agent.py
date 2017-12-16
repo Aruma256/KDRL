@@ -46,7 +46,7 @@ class DQNAgent:
         if self.target_model_update != 1:
             self.target_core_model.set_weights(self.core_model.get_weights())
     def select_best_action(self, state):
-        scores = self.core_model.predict_on_batch(state)[0]
+        scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
         return np.argmax(scores)
     def train(self):
         if self.warmup < self.memory._get_current_size():
