@@ -4,6 +4,8 @@ from keras import backend as K
 from keras.models import Model, model_from_json
 from keras.layers import Input, Lambda, dot
 
+from .memory import SingleActionMemory
+
 class DQNAgent:
     def __init__(self,
                  core_model,
@@ -26,7 +28,10 @@ class DQNAgent:
         self.optimizer = optimizer
         self.loss = loss
         self.policy = policy
-        self.memory = memory
+        if isinstance(memory, int):
+            self.memory = SingleActionMemory(int(memory), state_input._keras_shape[1:])
+        else:
+            self.memory = memory
         self.gamma = gamma
         self.target_model_update = target_model_update
         self.warmup = warmup
