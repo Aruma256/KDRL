@@ -15,32 +15,27 @@ class SingleActionMemory:
         self.r = np.zeros(capacity, dtype=np.float32)
         self.c = np.zeros(capacity, dtype=np.bool)
         #
-        self.last_state = None
-        self.last_action = None
+        self.last_state_action = None
     def start_episode(self, state, action):
-        self.last_state = state
-        self.last_action = action
+        assert self.last_state_action is None
+        self.last_state_action = state, action
     def step(self, state, action, reward):
-        assert self.last_state is not None
-        assert self.last_action is not None
+        assert self.last_state_action is not None
         #
         self._push(state, reward, cont=True)
         #
-        self.last_state = state
-        self.last_action = action
+        self.last_state_action = state, action
     def end_episode(self, state, reward):
-        if self.last_state is None:
+        if self.last_state_action is None:
             return
-        assert self.last_action is not None
         #
         self._push(state, reward, cont=False)
         #
-        self.last_state = None
-        self.last_action = None
+        self.last_state_action = None
     def _push(self, next_state, reward, cont):
         p = self._next
-        self.s[p] = self.last_state
-        self.a[p] = self.last_action
+        self.s[p] = self.last_state_action[0]
+        self.a[p] = self.last_state_action[1]
         self.ns[p] = next_state
         self.r[p] = reward
         self.c[p] = cont
