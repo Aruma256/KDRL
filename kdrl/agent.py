@@ -46,38 +46,48 @@ class DQNAgent:
         self.train_count = 0
         # compile
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
-        self.sync_target_model()
-    def sync_target_model(self):
-        if self.target_model_update != 1:
-            self.target_core_model.set_weights(self.core_model.get_weights())
-    def select_best_action(self, state):
-        scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
-        return np.argmax(scores)
-    def train(self):
-        if self.warmup < self.memory._get_current_size():
-            states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
-            pred_Q = self.target_core_model.predict_on_batch(next_states)
-            max_Q = np.max(pred_Q, axis=-1)
-            self.model.train_on_batch([states, actions], rewards + cont_flags * self.gamma * max_Q)
-            #
-            self.train_count += 1
-            if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
-                self.sync_target_model()
+        self._sync_target_model()
+    # primary method
+    def start_episode(self, state):
+        self.memory.start_episode(state)
+        action = self._select_action(state)
+        self.memory.set_action(action)
+        return action
+    def step(self, state, reward):
+        self.memory.step(state, reward)
+        self._train()
+        action = self._select_action(state)
+        self.memory.set_action(action)
+        return action
+    def end_episode(self, state, reward):
+        self.memory.end_episode(state, reward)
+        self._train()
+        self.episode_count += 1
+    # select action
     def _select_action(self, state):
         scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
         action = self.policy(scores)
         return action
-    def start_episode(self, state):
-        action = self._select_action(state)
-        self.memory.start_episode(state, action)
-        return action
-    def step(self, state, reward):
-        action = self._select_action(state)
-        self.memory.step(state, action, reward)
-        self.train()
-        return action
-    def end_episode(self, state, reward):
-        self.memory.end_episode(state, reward)
-        self.train()
-        self.episode_count += 1
+    def select_best_action(self, state):
+        scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
+        return np.argmax(scores)
+    # training
+    def _train(self):
+        if self.warmup < self.memory._get_current_size():
+            input, target = self._gen_training_data()
+            self.model.train_on_batch(input, target)
+            #
+            self.train_count += 1
+            if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
+                self._sync_target_model()
+    def _gen_training_data(self):
+        states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
+        pred_Q = self.target_core_model.predict_on_batch(next_states)
+        max_Q = np.max(pred_Q, axis=-1)
+        input = [states, actions]
+        target = rewards + cont_flags * self.gamma * max_Q
+        return input, target
+    def _sync_target_model(self):
+        if self.target_model_update != 1:
+            self.target_core_model.set_weights(self.core_model.get_weights())
 

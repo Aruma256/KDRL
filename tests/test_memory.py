@@ -9,11 +9,15 @@ class TestSingleActionMemory(TestCase):
         num_actions = 4
         memory = SingleActionMemory(capacity, state_shape)
         s = np.arange(state_shape[0] * state_shape[1]).reshape(state_shape) + 10
-        memory.start_episode(s, 0)
-        memory.step(s + 1, 1, 101)      # 0: 0->1
-        memory.step(s + 2, 2, 102)      # 1: 1->2
-        memory.step(s + 3, 3, 103)      # 2: 2->3
-        memory.end_episode(s + 4, 104)  # 0: 3->4
+        memory.start_episode(s)
+        memory.set_action(0)
+        memory.step(s + 1, 101)
+        memory.set_action(1)
+        memory.step(s + 2, 102)
+        memory.set_action(2)
+        memory.step(s + 3, 103)
+        memory.set_action(3)
+        memory.end_episode(s + 4, 104)
         assert np.array_equal(memory.s[0], s + 3)
         assert np.array_equal(memory.s[1], s + 1)
         assert np.array_equal(memory.a, np.array([3, 1, 2]))

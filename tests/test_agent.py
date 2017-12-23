@@ -16,9 +16,10 @@ def get_model(state_shape, num_actions):
                        Dense(64, activation='relu'),
                        Dense(num_actions)])
 
+env = gym.make('CartPole-v0')
+
 class TestAgent(TestCase):
     def test_dqn_init(self):
-        env = gym.make('CartPole-v0')
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
@@ -34,10 +35,7 @@ class TestAgent(TestCase):
                          policy=EpsilonGreedy(eps=0.01),
                          memory=10000,
                          )
-        
     def test_dqn_cartpole(self):
-        env = gym.make('CartPole-v0')
-        #
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
