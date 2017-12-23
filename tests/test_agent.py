@@ -24,14 +24,14 @@ class TestAgent(TestCase):
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
                          num_actions=num_actions,
                          optimizer='adam',
-                         policy=EpsilonGreedyPolicy(eps=0.01),
+                         policy=EpsilonGreedy(eps=0.01),
                          memory=SingleActionMemory(capacity=10000,
                                                    state_shape=state_shape),
                          )
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
                          num_actions=num_actions,
                          optimizer='adam',
-                         policy=EpsilonGreedyPolicy(eps=0.01),
+                         policy=EpsilonGreedy(eps=0.01),
                          memory=10000,
                          )
         
@@ -43,7 +43,7 @@ class TestAgent(TestCase):
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
                          num_actions=num_actions,
                          optimizer='adam',
-                         policy=EpsilonGreedyPolicy(eps=0.01),
+                         policy=EpsilonGreedy(eps=0.01),
                          memory=10000,
                          )
         #

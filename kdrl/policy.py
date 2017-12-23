@@ -1,19 +1,19 @@
 import numpy as np
 
-class GreedyPolicy:
+class Greedy:
     def __call__(self, scores):
         return np.argmax(scores)
 
-class EpsilonGreedyPolicy(GreedyPolicy):
+class EpsilonGreedy(Greedy):
     def __init__(self, eps):
         self.eps = eps
     def __call__(self, scores):
         if self.eps < np.random.uniform():
             return np.random.randint(len(scores))
         else:
-            return GreedyPolicy.__call__(self, scores)
+            return Greedy.__call__(self, scores)
 
-class BoltzmannPolicy:
+class Boltzmann:
     def __init__(self, t=1):
         self.t = t
     def __call__(self, scores):
@@ -23,4 +23,8 @@ class BoltzmannPolicy:
         probs = eq / np.sum(eq)
         action = np.random.choice(len(scores), p=probs)
         return action
+
+GreedyPolicy = Greedy
+EpsilonGreedyPolicy = EpsilonGreedy
+BoltzmannPolicy = Boltzmann
 
