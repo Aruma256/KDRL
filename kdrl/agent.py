@@ -41,7 +41,6 @@ class DQNAgent:
             self.target_core_model = self.core_model
         else:
             self.target_core_model = model_from_json(self.core_model.to_json())
-        self.last_state = None
         self.episode_count = 0
         self.train_count = 0
         # compile
