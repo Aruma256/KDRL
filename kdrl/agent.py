@@ -73,8 +73,8 @@ class DQNAgent:
     # training
     def _train(self):
         if self.warmup < self.memory._get_current_size():
-            train_data = self._gen_training_data()
-            self.model.train_on_batch(*train_data)
+            x, y = self._gen_training_data()
+            self.model.train_on_batch(x, y)
             #
             self.train_count += 1
             if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
@@ -85,7 +85,7 @@ class DQNAgent:
         max_Q = np.max(pred_Q, axis=-1)
         inputs = [states, actions]
         targets = rewards + cont_flags * self.gamma * max_Q
-        return (inputs, targets)
+        return inputs, targets
     def _sync_target_model(self):
         if self.target_model_update != 1:
             self.target_core_model.set_weights(self.core_model.get_weights())
