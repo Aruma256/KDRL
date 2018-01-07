@@ -1,6 +1,6 @@
 from kdrl.agent import DQNAgent
-from kdrl.policy import *
-from kdrl.memory import *
+from kdrl.policy import EpsilonGreedy
+from kdrl.trainer import GymTrainer
 import numpy as np
 
 from keras.models import Sequential
@@ -25,30 +25,11 @@ def main():
                      policy=EpsilonGreedy(eps=0.01),
                      memory=30000,
                      )
+    trainer = GymTrainer(env, agent)
     # training
-    for episode in range(500):
-        state = env.reset()
-        action = agent.start_episode(state)
-        while True:
-            state, reward, done, info = env.step(action)
-            if not done:
-                action = agent.step(state, reward)
-                continue
-            else:
-                agent.end_episode(state, reward)
-                break
+    trainer.train(500)
     # test
-    for episode in range(5):
-        state = env.reset()
-        reward_sum = 0
-        while True:
-            env.render()
-            action = agent.select_best_action(state)
-            state, reward, done, info = env.step(action)
-            reward_sum += reward
-            if done:
-                break
-        print('episode {} score: {}'.format(episode, reward_sum))
+    trainer.test(5, render=True)
 
 if __name__ == '__main__':
     main()
