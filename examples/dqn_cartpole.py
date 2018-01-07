@@ -27,9 +27,11 @@ def main():
                      )
     trainer = GymTrainer(env, agent)
     # training
-    trainer.train(500)
+    result = trainer.train(500)
     # test
-    trainer.test(5, render=True)
+    result = trainer.test(5, render=True)
+    for i, steps in enumerate(result['steps']):
+        print('episode {}: {} steps'.format(i, steps))
 
 if __name__ == '__main__':
     main()
