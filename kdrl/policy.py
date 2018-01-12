@@ -17,10 +17,11 @@ class Boltzmann:
     def __init__(self, t=1):
         self.t = t
     def __call__(self, scores):
-        q = np.asarray(scores, dtype=np.float32)
+        q = np.asarray(scores, dtype='float32')
         q -= np.max(q)
-        eq = np.exp(q / self.t)
-        probs = eq / np.sum(eq)
+        q /= self.t
+        eq = np.exp(q, out=q)
+        probs = np.divide(eq, np.sum(eq), out=eq)
         action = np.random.choice(len(scores), p=probs)
         return action
 
