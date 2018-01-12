@@ -1,17 +1,17 @@
 from unittest import TestCase
-from kdrl.policy import GreedyPolicy, EpsilonGreedyPolicy
+from kdrl.policy import *
 import numpy as np
 
-class TestMemory(TestCase):
+class TestPolicy(TestCase):
     def test_greedy(self):
-        policy = GreedyPolicy()
+        policy = Greedy()
         assert policy(np.array([5, 20, 10])) == 1
         assert policy(np.array([-5, -20, -10])) == 0
-
     def test_epsilongreedy(self):
-        policy = EpsilonGreedyPolicy(0)
+        policy = EpsilonGreedy(0)
         policy.eps = 1
         assert policy(np.array([5, 20, 10])) == 1
         assert policy(np.array([-5, -20, -10])) == 0
-        
+        policy.eps = 0
+        assert 0 <= policy(np.array([5, 20, 10])) < 3
 
