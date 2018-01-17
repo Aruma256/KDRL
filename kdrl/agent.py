@@ -43,6 +43,7 @@ class DQNAgent:
             self.target_core_model = model_from_json(self.core_model.to_json())
         self.episode_count = 0
         self.train_count = 0
+        self.train_history = []
         # compile
         self.model.compile(optimizer=self.optimizer, loss=self.loss)
         self._sync_target_model()
@@ -74,7 +75,8 @@ class DQNAgent:
     def _train(self):
         if self.warmup < self.memory._get_current_size():
             x, y = self._gen_training_data()
-            self.model.train_on_batch(x, y)
+            history = self.model.train_on_batch(x, y)
+            self.train_history.append(history)
             #
             self.train_count += 1
             if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
