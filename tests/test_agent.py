@@ -2,6 +2,7 @@ from unittest import TestCase
 from kdrl.agent import DQNAgent
 from kdrl.policy import *
 from kdrl.memory import *
+from kdrl.trainer import *
 import numpy as np
 
 from keras.models import Sequential
@@ -16,10 +17,10 @@ def get_model(state_shape, num_actions):
                        Dense(64, activation='relu'),
                        Dense(num_actions)])
 
-env = gym.make('CartPole-v0')
 
 class TestAgent(TestCase):
     def test_dqn_init(self):
+        env = gym.make('CartPole-v0')
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
@@ -36,36 +37,19 @@ class TestAgent(TestCase):
                          memory=10000,
                          )
     def test_dqn_cartpole(self):
+        env = gym.make('CartPole-v0')
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
         agent = DQNAgent(core_model=get_model(state_shape, num_actions),
                          num_actions=num_actions,
                          optimizer='adam',
-                         policy=EpsilonGreedy(eps=0.01),
+                         policy=Boltzmann(),
                          memory=10000,
                          )
         #
-        for episode in range(500):
-            state = env.reset()
-            action = agent.start_episode(state)
-            while True:
-                state, reward, done, info = env.step(action)
-                if not done:
-                    action = agent.step(state, reward)
-                    continue
-                else:
-                    agent.end_episode(state, reward)
-                    break
-        for episode in range(5):
-            step_count = 0
-            state = env.reset()
-            while True:
-                #env.render()
-                action = agent.select_best_action(state)
-                state, reward, done, info = env.step(action)
-                step_count += 1
-                if done:
-                    break
-            assert step_count >= 100, step_count
+        trainer = GymTrainer(env, agent)
+        trainer.train(500, False)
+        result = trainer.test(10, False)['steps']
+        assert max(result) == 200, result
 
 

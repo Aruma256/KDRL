@@ -4,7 +4,7 @@ from keras import backend as K
 from keras.models import Model, model_from_json
 from keras.layers import Input, Lambda, dot
 
-from .memory import SingleActionMemory
+from ..memory import SingleActionMemory
 
 class DQNAgent:
     def __init__(self,
