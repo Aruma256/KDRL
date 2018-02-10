@@ -1,5 +1,5 @@
-from kdrl.agent import DQNAgent
-from kdrl.policy import EpsilonGreedy
+from kdrl.agents.dqn import DQNAgent
+from kdrl.policy import Boltzmann
 from kdrl.trainer import GymTrainer
 import numpy as np
 
@@ -11,7 +11,6 @@ import gym
 def get_model(state_shape, num_actions):
     return Sequential([InputLayer(input_shape=state_shape),
                        Dense(64, activation='relu'),
-                       Dense(64, activation='relu'),
                        Dense(num_actions)])
 
 def main():
@@ -22,12 +21,12 @@ def main():
     agent = DQNAgent(core_model=get_model(state_shape, num_actions),
                      num_actions=num_actions,
                      optimizer='adam',
-                     policy=EpsilonGreedy(eps=0.01),
+                     policy=Boltzmann(),
                      memory=30000,
                      )
     trainer = GymTrainer(env, agent)
     # training
-    result = trainer.train(500)
+    result = trainer.train(200)
     # test
     result = trainer.test(5, render=True)
     for i, steps in enumerate(result['steps']):
