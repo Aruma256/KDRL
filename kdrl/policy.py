@@ -1,5 +1,9 @@
 import numpy as np
 
+class Random:
+    def __call__(self, scores):
+        return np.random.randint(len(scores)) 
+
 class Greedy:
     def __call__(self, scores):
         return np.argmax(scores)
@@ -9,7 +13,7 @@ class EpsilonGreedy(Greedy):
         self.eps = eps
     def __call__(self, scores):
         if np.random.uniform() < self.eps:
-            return np.random.randint(len(scores))
+            return Random.__call__(self, scores)
         else:
             return Greedy.__call__(self, scores)
 
