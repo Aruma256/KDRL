@@ -14,11 +14,14 @@ class DQNAgent(AbstractAgent):
                  optimizer,
                  policy,
                  memory,
+                 *args,
                  loss='mean_squared_error',
                  gamma=0.99,
                  target_model_update=1,
                  warmup=100,
-                 batch_size=32):
+                 batch_size=32,
+                 **kwargs):
+        super().__init__(*args, **kwargs)
         self.core_model = core_model
         state_input = self.core_model.input
         action_switch = Input(shape=(1,), dtype='int32')

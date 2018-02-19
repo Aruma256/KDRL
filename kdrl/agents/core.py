@@ -1,6 +1,9 @@
 class AbstractAgent:
-    def __init__(self):
-        pass
+    def __init__(self, *args, suppress_warnings=False, **kwargs):
+        if not suppress_warnings and args:
+            print('ignored args:', args)
+        if not suppress_warnings and kwargs:
+            print('ignored kwargs:', kwargs)
 
     def start_episode(self, state):
         raise NotImplementedError()
