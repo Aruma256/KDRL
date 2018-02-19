@@ -1,2 +1,2 @@
-from .basic import RandomAgentD, ConstantAgentD
+from .basic import RandomAgentD, ConstantAgent
 from .dqn import *

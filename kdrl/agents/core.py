@@ -16,3 +16,9 @@ class AbstractAgent:
 
     def select_best_action(self, state):
         raise NotImplementedError()
+
+
+class AbstractDiscreteAgent(AbstractAgent):
+    def __init__(self, num_actions, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.num_actions = num_actions
