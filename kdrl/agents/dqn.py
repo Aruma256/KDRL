@@ -4,9 +4,10 @@ from keras import backend as K
 from keras.models import Model, model_from_json
 from keras.layers import Input, Lambda, dot
 
+from .core import AbstractAgent
 from ..memory import SingleActionMemory
 
-class DQNAgent:
+class DQNAgent(AbstractAgent):
     def __init__(self,
                  core_model,
                  num_actions,
