@@ -1,5 +1,6 @@
 class AbstractAgent:
-    def __init__(self, *args, suppress_warnings=False, **kwargs):
+    def __init__(self, action_space, *args, suppress_warnings=False, **kwargs):
+        self.action_space = action_space
         if not suppress_warnings and args:
             print('ignored args:', args)
         if not suppress_warnings and kwargs:
@@ -16,9 +17,3 @@ class AbstractAgent:
 
     def select_best_action(self, state):
         raise NotImplementedError()
-
-
-class AbstractDiscreteAgent(AbstractAgent):
-    def __init__(self, num_actions, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.num_actions = num_actions

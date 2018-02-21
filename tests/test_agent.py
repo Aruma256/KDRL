@@ -10,6 +10,7 @@ from keras.layers import InputLayer, Dense
 
 import gym
 
+
 def get_model(state_shape, num_actions):
     return Sequential([InputLayer(input_shape=state_shape),
                        Dense(64, activation='relu'),
@@ -21,25 +22,26 @@ class TestAgent(TestCase):
         env = gym.make('CartPole-v0')
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
-        agent = DQNAgent(core_model=get_model(state_shape, num_actions),
-                         num_actions=num_actions,
+        agent = DQNAgent(action_space=num_actions,
+                         core_model=get_model(state_shape, num_actions),
                          optimizer='adam',
                          policy=EpsilonGreedy(eps=0.01),
                          memory=SingleActionMemory(capacity=10000,
                                                    state_shape=state_shape),
                          )
-        agent = DQNAgent(core_model=get_model(state_shape, num_actions),
-                         num_actions=num_actions,
+        agent = DQNAgent(action_space=num_actions,
+                         core_model=get_model(state_shape, num_actions),
                          optimizer='adam',
                          policy=EpsilonGreedy(eps=0.01),
                          memory=10000,
                          )
+
     def test_dqn_cartpole(self):
         env = gym.make('CartPole-v0')
         state_shape = env.observation_space.shape
         num_actions = env.action_space.n
-        agent = DQNAgent(core_model=get_model(state_shape, num_actions),
-                         num_actions=num_actions,
+        agent = DQNAgent(action_space=num_actions,
+                         core_model=get_model(state_shape, num_actions),
                          optimizer='adam',
                          policy=Boltzmann(),
                          memory=10000,
@@ -49,5 +51,3 @@ class TestAgent(TestCase):
         trainer.train(200, False)
         result = trainer.test(10, False)['steps']
         assert max(result) == 200, result
-
-

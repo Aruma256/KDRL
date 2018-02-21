@@ -9,8 +9,8 @@ from ..memory import SingleActionMemory
 
 class DQNAgent(AbstractAgent):
     def __init__(self,
+                 action_space,
                  core_model,
-                 num_actions,
                  optimizer,
                  policy,
                  memory,
@@ -21,14 +21,14 @@ class DQNAgent(AbstractAgent):
                  warmup=100,
                  batch_size=32,
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(action_space, *args, **kwargs)
+        assert isinstance(action_space, int), action_space
         self.core_model = core_model
         state_input = self.core_model.input
         action_switch = Input(shape=(1,), dtype='int32')
-        one_hot = Lambda(lambda x: K.squeeze(K.one_hot(x, num_actions), axis=1), output_shape=(num_actions,))
+        one_hot = Lambda(lambda x: K.squeeze(K.one_hot(x, action_space), axis=1), output_shape=(action_space,))
         self.model = Model([state_input, action_switch], dot([self.core_model(state_input), one_hot(action_switch)], axes=1))
         #
-        self.num_actions = num_actions
         self.optimizer = optimizer
         self.loss = loss
         self.policy = policy

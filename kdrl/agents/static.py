@@ -1,47 +1,40 @@
 import numpy as np
-from .core import AbstractAgent, AbstractDiscreteAgent
+from .core import AbstractAgent
 
 
 class _StaticAgent(AbstractAgent):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def start_episode(self, state):
+    def start_episode(self, *args):
         return self.select_best_action(state)
 
-    def step(self, state, reward):
+    def step(self, *args):
         return self.select_best_action(state)
 
-    def end_episode(self, state, reward):
+    def end_episode(self, *args):
         pass
 
 
-class _StaticAgentD(AbstractDiscreteAgent):
-    def __init__(self, num_actions, *args, **kwargs):
-        super().__init__(num_actions, *args, **kwargs)
+class RandomAgent(_StaticAgent):
+    def __init__(self, action_space, *args, **kwargs):
+        super().__init__(action_space, *args, **kwargs)
+        if isinstance(action_space, int):
+            self._random = lambda: self._random_int(action_space)
+        else:
+            raise NotImplementedError()
 
-    def start_episode(self, state):
-        return self.select_best_action(state)
+    def _random_int(self, high):
+        return np.random.randint(0, high)
 
-    def step(self, state, reward):
-        return self.select_best_action(state)
-
-    def end_episode(self, state, reward):
-        pass
-
-
-class RandomAgentD(_StaticAgentD):
-    def __init__(self, num_actions, *args, **kwargs):
-        super().__init__(num_actions, *args, **kwargs)
-
-    def select_best_action(self, state):
-        return np.random.choice(self.num_actions)
+    def select_best_action(self, *args):
+        return self._random()
 
 
 class ConstantAgent(_StaticAgent):
-    def __init__(self, action, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.action = action
+    def __init__(self, action_space, constant_action, *args, **kwargs):
+        super().__init__(action_space, *args, **kwargs)
+        self.constant_action = constant_action
 
-    def select_best_action(self, state):
-        return self.action
+    def select_best_action(self, *args):
+        return self.constant_action
