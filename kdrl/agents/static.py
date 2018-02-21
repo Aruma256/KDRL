@@ -7,10 +7,10 @@ class _StaticAgent(AbstractAgent):
         super().__init__(*args, **kwargs)
 
     def start_episode(self, *args):
-        return self.select_best_action(state)
+        return self.select_best_action()
 
     def step(self, *args):
-        return self.select_best_action(state)
+        return self.select_best_action()
 
     def end_episode(self, *args):
         pass
