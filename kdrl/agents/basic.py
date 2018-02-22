@@ -61,3 +61,27 @@ class QLearningAgent(AbstractAgent):
 
     def select_best_action(self, state):
         return np.argmax(self.Q[tuple(state)])
+
+
+class DescritizingQAgent(QLearningAgent):
+    def __init__(self, action_space, boundaries, policy, *args, **kwargs):
+        state_shape = np.array([b.shape for b in boundaries]) + 1
+        super().__init__(action_space, state_shape, policy, *args, **kwargs)
+        self.boundaries = boundaries
+
+    def start_episode(self, state):
+        return super().start_episode(self._descritize_state(state))
+
+    def step(self, state, reward):
+        return super().step(self._descritize_state(state), reward)
+
+    def end_episode(self, state, reward):
+        super().end_episode(state, reward)
+
+    def select_best_action(self, state):
+        return super().select_best_action(self._descritize_state(state))
+
+    def _descritize_state(self, state):
+        _index = [np.searchsorted(self.boundaries[i], state[i]) for i in range(len(state))]
+        _index = tuple(_index)
+        return _index
