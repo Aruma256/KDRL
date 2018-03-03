@@ -13,6 +13,7 @@ class NDAgent(AbstractAgent):
                  core_actor_model,
                  core_critic_model,
                  optimizer,
+                 policy,
                  memory,
                  *args,
                  loss='mean_squared_error',
@@ -27,6 +28,7 @@ class NDAgent(AbstractAgent):
         #
         self.optimizer = optimizer
         self.loss = loss
+        self.policy = policy
         if isinstance(memory, int):
             self.memory = SingleActionMemory(int(memory), core_actor_model.inputs[0]._keras_shape[1:], continuous_action=True)
         else:
@@ -73,7 +75,7 @@ class NDAgent(AbstractAgent):
     # select action
     def _select_action(self, state):
         action = self.core_actor_model.predict_on_batch(np.asarray([state]))[0]
-        action = np.random.normal(action, 0.1)
+        action = self.policy(action)
         action = np.clip(action, *self.action_space)
         return self.select_best_action(state)
     def select_best_action(self, state):

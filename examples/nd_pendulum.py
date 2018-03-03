@@ -32,6 +32,7 @@ def main():
                     core_actor_model=get_actor_model(state_shape),
                     core_critic_model=get_critic_model(state_shape),
                     optimizer='adam',
+                    policy=lambda x: np.random.normal(x, 1/16),
                     memory=30000,
                     target_model_update=5,
                     )
