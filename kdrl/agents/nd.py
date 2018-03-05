@@ -89,17 +89,16 @@ class NDAgent(AbstractAgent):
             history = self.core_critic_model.train_on_batch(x, y)
             self.train_history.append(history)
             #
-            self.combined_model.train_on_batch(x[0], np.ones((self.batch_size, 1)))
+            self.combined_model.train_on_batch(x[0], -np.ones((self.batch_size, 1)))
             #
             self.train_count += 1
             if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
                 self._sync_target_model()
     def _gen_training_data(self):
         states, actions, next_states, rewards, cont_flags = self.memory.sample(self.batch_size)
-        pred_Q = self.target_combined_model.predict_on_batch(next_states)
-        max_Q = np.max(pred_Q, axis=-1)
+        next_V = self.target_combined_model.predict_on_batch(next_states).reshape(-1)
         inputs = [states, actions]
-        targets = rewards + cont_flags * self.gamma * max_Q
+        targets = rewards + cont_flags * self.gamma * next_V
         return inputs, targets
     def _sync_target_model(self):
         if self.target_model_update != 1:
