@@ -18,8 +18,8 @@ def main():
     #
     state_shape = env.observation_space.shape
     num_actions = env.action_space.n
-    agent = DQNAgent(core_model=get_model(state_shape, num_actions),
-                     num_actions=num_actions,
+    agent = DQNAgent(action_space=num_actions,
+                     core_model=get_model(state_shape, num_actions),
                      optimizer='adam',
                      policy=Boltzmann(),
                      memory=30000,
