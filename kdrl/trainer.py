@@ -6,6 +6,7 @@ class GymTrainer:
     def __init__(self, env, agent):
         self.env = env
         self.agent = agent
+        self.test = self.evaluate
 
     def train(self, episode, render=False, adjust_render_fps=True):
         _delay = self._get_delay(adjust_render_fps)
@@ -31,7 +32,7 @@ class GymTrainer:
                     break
         return {'reward' : result_reward, 'steps' : result_steps}
 
-    def test(self, episode, render=False, adjust_render_fps=True):
+    def evaluate(self, episode, render=False, adjust_render_fps=True):
         _delay = self._get_delay(adjust_render_fps)
         env, agent = self.env, self.agent
         result_reward = [0] * episode
