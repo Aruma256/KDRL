@@ -50,9 +50,10 @@ class NDAgent(AbstractAgent):
         self.episode_count = 0
         self.train_count = 0
         self.train_history = []
+        self._fake_y_true = np.zeros((self.batch_size, 1))
         #
         core_critic_model.trainable = False
-        self.combined_model.compile(optimizer=self.optimizer, loss=lambda y_true, y_pred: y_true*y_pred)
+        self.combined_model.compile(optimizer=self.optimizer, loss=lambda y_true, y_pred: -y_pred)
         core_critic_model.trainable = True
         self.core_critic_model.compile(optimizer=self.optimizer, loss=loss)
         self._sync_target_model()
@@ -89,7 +90,7 @@ class NDAgent(AbstractAgent):
             history = self.core_critic_model.train_on_batch(x, y)
             self.train_history.append(history)
             #
-            self.combined_model.train_on_batch(x[0], -np.ones((self.batch_size, 1)))
+            self.combined_model.train_on_batch(x[0], self._fake_y_true)
             #
             self.train_count += 1
             if self.target_model_update > 1 and self.train_count % self.target_model_update == 0:
