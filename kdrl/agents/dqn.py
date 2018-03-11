@@ -6,6 +6,7 @@ from keras.layers import Input, Lambda, dot
 
 from .core import AbstractAgent
 from ..memory import SingleActionMemory
+from ..policy import Greedy
 
 class DQNAgent(AbstractAgent):
     def __init__(self,
@@ -20,6 +21,7 @@ class DQNAgent(AbstractAgent):
                  target_model_update=1,
                  warmup=100,
                  batch_size=32,
+                 eval_policy=Greedy(),
                  **kwargs):
         super().__init__(action_space, *args, **kwargs)
         assert isinstance(action_space, int), action_space
@@ -40,6 +42,7 @@ class DQNAgent(AbstractAgent):
         self.target_model_update = target_model_update
         self.warmup = warmup
         self.batch_size = batch_size
+        self.eval_policy = eval_policy
         #
         if target_model_update == 1:
             self.target_core_model = self.core_model
@@ -74,7 +77,8 @@ class DQNAgent(AbstractAgent):
         return action
     def select_best_action(self, state):
         scores = self.core_model.predict_on_batch(np.asarray([state]))[0]
-        return np.argmax(scores)
+        action = self.eval_policy(scores)
+        return action
     # training
     def _train(self):
         if self.warmup < self.memory._get_current_size():
