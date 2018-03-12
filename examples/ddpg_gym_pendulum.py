@@ -1,4 +1,4 @@
-from kdrl.agents.nd import NDAgent
+from kdrl.agents.ddpg import DDPGAgent
 from kdrl.trainer import GymTrainer
 import numpy as np
 
@@ -28,14 +28,14 @@ def main():
     #
     state_shape = env.observation_space.shape
     action_space = [env.action_space.low[0], env.action_space.high[0]]
-    agent = NDAgent(action_space=action_space,
-                    core_actor_model=get_actor_model(state_shape),
-                    core_critic_model=get_critic_model(state_shape),
-                    optimizer='adam',
-                    policy=lambda x: np.random.normal(x, 1/16),
-                    memory=30000,
-                    target_model_update=5,
-                    )
+    agent = DDPGAgent(action_space=action_space,
+                      core_actor_model=get_actor_model(state_shape),
+                      core_critic_model=get_critic_model(state_shape),
+                      optimizer='adam',
+                      policy=lambda x: np.random.normal(x, 1/16),
+                      memory=30000,
+                      target_model_update=5,
+                      )
     trainer = GymTrainer(env, agent)
     # training
     result = trainer.train(200)

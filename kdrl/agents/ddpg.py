@@ -7,7 +7,7 @@ from keras.layers import Input, Lambda, dot
 from .core import AbstractAgent
 from ..memory import SingleActionMemory
 
-class NDAgent(AbstractAgent):
+class DDPGAgent(AbstractAgent):
     def __init__(self,
                  action_space,
                  core_actor_model,
