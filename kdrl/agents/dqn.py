@@ -31,8 +31,6 @@ class DQNAgent(AbstractAgent):
         one_hot = Lambda(lambda x: K.squeeze(K.one_hot(x, action_space), axis=1), output_shape=(action_space,))
         self.model = Model([state_input, action_switch], dot([self.core_model(state_input), one_hot(action_switch)], axes=1))
         #
-        self.optimizer = optimizer
-        self.loss = loss
         self.policy = policy
         if isinstance(memory, int):
             self.memory = SingleActionMemory(int(memory), state_input._keras_shape[1:])
@@ -52,7 +50,7 @@ class DQNAgent(AbstractAgent):
         self.train_count = 0
         self.train_history = []
         # compile
-        self.model.compile(optimizer=self.optimizer, loss=self.loss)
+        self.model.compile(optimizer, loss=loss)
         self._sync_target_model()
     # primary method
     def start_episode(self, state):
