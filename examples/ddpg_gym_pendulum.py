@@ -1,4 +1,5 @@
 from kdrl.agents.ddpg import DDPGAgent
+from kdrl.explorers import OU
 from kdrl.trainer import GymTrainer
 import numpy as np
 
@@ -32,7 +33,7 @@ def main():
                       core_actor_model=get_actor_model(state_shape),
                       core_critic_model=get_critic_model(state_shape),
                       optimizer='adam',
-                      policy=lambda x: np.random.normal(x, 1/16),
+                      policy=OU(0, mu=0, theta=0.15, sigma=0.01, dt=1/32),
                       memory=30000,
                       target_model_update=5,
                       )
