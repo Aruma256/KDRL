@@ -50,4 +50,4 @@ class TestAgent(TestCase):
         trainer = GymTrainer(env, agent)
         trainer.train(200, False)
         result = trainer.test(10, False)['steps']
-        assert max(result) == 200, result
+        self.assertEqual(max(result), 200, result)

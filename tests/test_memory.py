@@ -18,17 +18,17 @@ class TestSingleActionMemory(TestCase):
         memory.step(s + 3, 103)
         memory.set_action(3)
         memory.end_episode(s + 4, 104)
-        assert np.array_equal(memory.s[0], s + 3)
-        assert np.array_equal(memory.s[1], s + 1)
-        assert np.array_equal(memory.a, np.array([3, 1, 2]))
-        assert np.array_equal(memory.s[0] + 1, memory.ns[0])
-        assert np.array_equal(memory.ns[1], s + 2)
-        assert np.array_equal(memory.s[2] + 1, memory.ns[2])
-        assert np.array_equal(memory.r, np.array([104, 102, 103]))
-        assert not memory.c[0]
-        assert memory.c[1]
-        assert memory.c[2]
+        self.assertTrue(np.array_equal(memory.s[0], s + 3))
+        self.assertTrue(np.array_equal(memory.s[1], s + 1))
+        self.assertTrue(np.array_equal(memory.a, np.array([3, 1, 2])))
+        self.assertTrue(np.array_equal(memory.s[0] + 1, memory.ns[0]))
+        self.assertTrue(np.array_equal(memory.ns[1], s + 2))
+        self.assertTrue(np.array_equal(memory.s[2] + 1, memory.ns[2]))
+        self.assertTrue(np.array_equal(memory.r, np.array([104, 102, 103])))
+        self.assertTrue(not memory.c[0])
+        self.assertTrue(memory.c[1])
+        self.assertTrue(memory.c[2])
         for i in range(capacity):
             for elem in memory.sample(i):
-                assert len(elem) == i
+                self.assertEqual(len(elem), i)
 
