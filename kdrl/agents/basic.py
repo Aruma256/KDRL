@@ -1,6 +1,5 @@
 import numpy as np
 from .core import AbstractAgent
-from _operator import index
 
 
 class QLearningAgent(AbstractAgent):
