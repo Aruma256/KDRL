@@ -9,9 +9,13 @@ from keras.layers import InputLayer, Dense, Lambda
 import gym
 
 def get_model(state_shape, num_actions):
-    return Sequential([InputLayer(input_shape=state_shape),
-                       Dense(64, activation='relu'),
-                       Dense(num_actions)])
+    model = Sequential(
+        [InputLayer(input_shape=state_shape),
+         Dense(64, activation='relu'),
+         Dense(num_actions)
+         ]
+        )
+    return model
 
 def main():
     env = gym.make('MountainCar-v0')

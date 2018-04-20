@@ -9,11 +9,15 @@ from keras.layers import Input, InputLayer, Dense, Lambda, Concatenate
 import gym
 
 def get_actor_model(state_shape):
-    return Sequential([InputLayer(input_shape=state_shape),
-                       Dense(64, activation='relu'),
-                       Dense(64, activation='relu'),
-                       Dense(1, activation='tanh'),
-                       Lambda(lambda x: 2 * x)])
+    model = Sequential(
+        [InputLayer(input_shape=state_shape),
+         Dense(64, activation='relu'),
+         Dense(64, activation='relu'),
+         Dense(1, activation='tanh'),
+         Lambda(lambda x: 2 * x)
+         ]
+        )
+    return model
 
 def get_critic_model(state_shape):
     si = Input(state_shape)
